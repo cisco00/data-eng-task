@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import yfinance as yf
 from airflow.providers.papermill.operators.papermill import PapermillOperator
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.operators.python import PythonOperator, BaseOperator
 
 # Define DataELT class
 class DataELT:
@@ -53,7 +53,7 @@ with DAG(
     'daily_stock_data_update',
     default_args=default_args,
     description='DAG to update stock data daily using PythonOperator',
-    schedule_interval='0 0 * * *',  # Run every day at midnight
+    schedule='0 0 * * *',  # Run every day at midnight
     catchup=False,
 ) as dag:
 
@@ -61,6 +61,11 @@ with DAG(
     update_stock_data = PythonOperator(
         task_id='run_data_update',
         python_callable=run_data_update
+    )
+
+    output = BaseOperator(
+        task_id='creating_output_file',
+        bash_command='mkdir -p /home/oem/PycharmProjects/data-eng-task/output/'
     )
 
     # PapermillOperator to execute the Jupyter Notebook
