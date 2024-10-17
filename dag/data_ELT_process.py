@@ -22,14 +22,12 @@ def data_retrieval(ticker, start_date, end_date):
     stock_data = yf.download(ticker, start=start_date.strftime("%Y-%m-%d"), end=end_date.strftime("%Y-%m-%d"))
     stock_data.reset_index(inplace=True)
 
-    # Ensure the 'Date' field is named correctly and converted to string for MongoDB storage
     stock_data['Date'] = stock_data['Date'].astype(str)
 
-    data = stock_data.to_dict('records')  # Convert DataFrame to list of dictionaries
+    data = stock_data.to_dict('records')
     return data
 
 
-# Function to check the latest date in MongoDB
 def get_last_saved_date(collection):
     last_entry = collection.find_one(
         sort=[("Date", -1)])  # Sort by 'Date' in descending order and get the first document
@@ -38,8 +36,6 @@ def get_last_saved_date(collection):
     else:
         return None
 
-
-# Function to insert new data into MongoDB
 def save_data_db(collection, new_data):
     if new_data:
         collection.insert_many(new_data)  # Insert new stock data into the collection
@@ -48,7 +44,6 @@ def save_data_db(collection, new_data):
         print("No new data to insert.")
 
 
-# Function to update the MongoDB database with new data
 def update_database():
     collection_apple, collection_tesla, collection_googl = connecting_db()
 
