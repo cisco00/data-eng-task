@@ -71,33 +71,8 @@ def update_database():
         # Insert the new data into MongoDB
         save_data_db(collection, new_data)
 
+update_database()
 
-# Call update_database() to perform the update
-def check_document_structure(collection_name):
-    collection, collection_2, collection_3 = connecting_db()
-
-    # Select the appropriate collection based on the input argument
-    if collection_name == "AAPL":
-        collection = collection
-    elif collection_name == "TESLA":
-        collection = collection_2
-    elif collection_name == "GOOGL":
-        collection = collection_3
-    else:
-        raise ValueError(f"Unknown collection name: {collection_name}")
-
-    # Now you can use find_one on the selected collection
-    sample_document = collection.find_one()  # Retrieve one document from the collection
-
-    if sample_document:
-        print(f"Sample document from {collection_name}: {sample_document}")
-    else:
-        print(f"No documents found in {collection_name}.")
-
-
-# Example usage:
-check_document_structure("AAPL")
-# check_document_structure()
 
 # Set default arguments for the DAG
 default_args = {
@@ -129,12 +104,12 @@ pulling_data_from_yfinance = PythonOperator(
 # PapermillOperator to execute the Jupyter Notebook
 run_notebook = PapermillOperator(
     task_id='run_stock_data_notebook',
-    input_nb='/home/oem/PycharmProjects/data-eng-task/forecastingModel.ipynb',  # Change this path
-    output_nb='/home/oem/PycharmProjects/data-eng-task/output/data_retrieval_notebook_output_{{ ds }}.ipynb',  # Output path with dynamic date
+    input_nb='/opt/airflow/notebooks/forecastingModel.ipynb',  # Updated path to the input notebook
+    output_nb='/opt/airflow/output/data_retrieval_notebook_output_{{ ds }}.ipynb',  # Updated path for output
     parameters={
         'ticker': 'AAPL',
-        'start_date': '{{ ds }}',  # Airflow start date macro
-        'end_date': '{{ next_ds }}'  # Airflow end date macro
+        'start_date': '{{ ds }}',    # Start date for yfinance
+        'end_date': '{{ next_ds }}'  # End date for yfinance
     },
     dag=dag
 )

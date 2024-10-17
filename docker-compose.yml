@@ -1,10 +1,52 @@
 version: '3'
+
 services:
-  data_eng:
-    image: data_eng:latest  # If you're pulling from a registry
-    # or
-    build: .  # If building locally
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
     ports:
-      - "8080:8080"
+      - "27017:27017"
     volumes:
-      - ./data:/data
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: financeStockData
+
+  airflow-webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: airflow-webserver
+    depends_on:
+      - mongo
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=sqlite:////usr/local/airflow/airflow.db
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./output:/opt/airflow/output
+      - ./notebooks:/opt/airflow/notebooks
+    ports:
+      - "8082:8080"  # Change port to avoid conflicts
+    command: ["webserver"]
+
+  airflow-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: airflow-scheduler
+    depends_on:
+      - mongo
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=sqlite:////usr/local/airflow/airflow.db
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./output:/opt/airflow/output
+      - ./notebooks:/opt/airflow/notebooks
+    command: ["scheduler"]
+
+volumes:
+  mongo_data:
+    driver: local
