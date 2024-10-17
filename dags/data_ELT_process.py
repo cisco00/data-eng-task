@@ -4,6 +4,7 @@ import yfinance as yf
 from airflow.providers.papermill.operators.papermill import PapermillOperator
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.operators.email import EmailOperator
 from airflow.operators.bash import BashOperator
 
 
@@ -101,6 +102,14 @@ pulling_data_from_yfinance = PythonOperator(
     dag=dag,
 )
 
+email = EmailOperator(
+       task_id="Email_failure_alert",
+       to='idokofrancis66@gmail.com',
+       subject='Failure alert',
+       html_content=""" Your pipeline has failed to work as required """,
+       dag=dag
+)
+
 # PapermillOperator to execute the Jupyter Notebook
 run_notebook = PapermillOperator(
     task_id='run_stock_data_notebook',
@@ -115,4 +124,4 @@ run_notebook = PapermillOperator(
 )
 
 # Task dependencies
-pulling_data_from_yfinance >> run_notebook
+pulling_data_from_yfinance >> email >> run_notebook
