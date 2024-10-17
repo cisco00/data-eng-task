@@ -54,27 +54,26 @@ def update_database():
     new_data = data_retrieval(start_date, end_date)
 
     # Insert the new data into MongoDB
-    save_data_db(new_data)
+    return save_data_db(new_data)
 
 
 # Set default arguments for the DAG
 default_args = {
-    "owner": "Ikwu_Francis",
-    "depends_on_past": False,
-    "start_date": datetime(2020, 1, 1),
-    "email": ["idokofrancis66@gmail.com"],
-    "email_on_failure": True,
-    "email_on_retry": True,
-    "retries": 3,
-    "retry_delay": timedelta(minutes=3),
+  "owner": "Ikwu_Francis",
+  "depends_on_past": False,
+  "start_date": datetime(2020, 1, 1),
+  "email": ["idokofrancis66@gmail.com"],
+  "email_on_failure": True,
+  "email_on_retry": True,
+  "retries": 3,
+  "retry_delay": timedelta(minutes=3),
 }
-
 # Define the DAG
 dag = DAG(
     'daily_stock_data_update',
     default_args=default_args,
     description='DAG to update stock data daily using PythonOperator',
-    schedule_interval='0 0 * * *',  # Run every day at midnight
+    schedule='0 0 * * *',  # Run every day at midnight
     catchup=False,
 )
 
