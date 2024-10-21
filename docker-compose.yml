@@ -1,0 +1,10 @@
+version: '3'
+services:
+  data_eng:
+    image: data_eng:latest  # If you're pulling from a registry
+    # or
+    build: .  # If building locally
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
