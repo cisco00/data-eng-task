@@ -2,3 +2,7 @@ pandas
 pymongo
 yfinance
 apache-airflow
+statsmodels
+sklearn
+matplotlib
+numpy
