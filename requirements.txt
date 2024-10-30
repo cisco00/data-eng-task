@@ -6,3 +6,5 @@ statsmodels
 sklearn
 matplotlib
 numpy
+tensorflow
+keras
