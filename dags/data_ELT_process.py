@@ -11,7 +11,7 @@ from airflow.operators.bash import BashOperator
 # Function to connect to MongoDB
 def connecting_db():
     client = MongoClient('localhost', 27017)
-    db = client['financeStockData']  # Database name
+    db = client['finance_db']  # Database name
     collection_apple = db['AAPL_stock_data']  # Apple collection
     collection_tesla = db['TSLA_stock_data']  # Tesla collection
     collection_googl = db['GOOGL_stock_data']  # Alphabet collection
