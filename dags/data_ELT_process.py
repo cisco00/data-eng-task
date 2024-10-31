@@ -150,13 +150,4 @@ update_task = PythonOperator(
     dag=dag,
 )
 
-
-# email_task = EmailOperator(
-#     task_id='send_failure_email',
-#     to="idokofrancis66@gmail.com",
-#     subject="Airflow Task Failed",
-#     html_content="The stock data update task has failed.",
-#     dag=dag,
-# )
-
 update_task
