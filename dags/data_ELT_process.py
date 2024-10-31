@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import yfinance as yf
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.utils.email import send_email
 import psycopg2
 import json
 
@@ -117,6 +118,13 @@ def update_database():
 
 update_database()
 
+
+def email_failure(context):
+    subject = "Airflow Task Failed"
+    body = f"Task failed: {context['task_instance_key_str']}"
+    send_email(to="recipient@example.com", subject=subject, html_content=body)
+
+
 # Set up the Airflow DAG (example)
 default_args = {
     "owner": "Ikwu_Francis",
@@ -124,6 +132,7 @@ default_args = {
     "start_date": datetime(2020, 1, 1),
     "retries": 1,
     "retry_delay": timedelta(minutes=1),
+    "on_failure_callback": email_failure,
 }
 
 dag = DAG(
@@ -141,7 +150,13 @@ update_task = PythonOperator(
     dag=dag,
 )
 
-notification = EmailOperator(
-    task_id="notification",
 
-)
+# email_task = EmailOperator(
+#     task_id='send_failure_email',
+#     to="idokofrancis66@gmail.com",
+#     subject="Airflow Task Failed",
+#     html_content="The stock data update task has failed.",
+#     dag=dag,
+# )
+
+update_task
