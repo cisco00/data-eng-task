@@ -49,23 +49,23 @@ class DatabaseHandler:
             print(f"{len(dataset)} records inserted into apple_stock_data.")
         except psycopg2.Error as e:
             print("Error inserting data into PostgreSQL:", e)
-        finally:
-            cur.close()
-            conn.close()
+        # finally:
+        #     if cur is not None:
+        #         cur.close()
+        #     if conn is not None:
+        #         conn.close()
 
 
-# MongoDB connection and data handling
 def connecting_db():
     client = MongoClient('localhost', 27017)
-    db = client['financeStockData']  # Database name
+    db = client['financeStockData']
     return {
-        "AAPL": db['AAPL_stock_data'],  # Apple collection
-        "TSLA": db['TSLA_stock_data'],  # Tesla collection
-        "GOOGL": db['GOOGL_stock_data']  # Alphabet collection
+        "AAPL": db['AAPL_stock_data'],
+        "TSLA": db['TSLA_stock_data'],
+        "GOOGL": db['GOOGL_stock_data']
     }
 
 
-# Function to retrieve new stock data using yfinance
 def data_retrieval(ticker, start_date, end_date):
     stock_data = yf.download(ticker, start=start_date.strftime("%Y-%m-%d"), end=end_date.strftime("%Y-%m-%d"))
     stock_data.reset_index(inplace=True)
@@ -73,24 +73,21 @@ def data_retrieval(ticker, start_date, end_date):
     return stock_data.to_dict('records')
 
 
-# Function to get last saved date from MongoDB
 def get_last_saved_date_mongo(collection):
-    last_entry = collection.find_one(sort=[("Date", -1)])  # Sort by 'Date' in descending order
+    last_entry = collection.find_one(sort=[("Date", -1)])
     if last_entry and 'Date' in last_entry:
         return datetime.strptime(last_entry['Date'], '%Y-%m-%d')
     return None
 
 
-# Function to save data into MongoDB
 def save_data_db(collection, new_data):
     if new_data:
-        collection.insert_many(new_data)  # Insert new stock data into the collection
+        collection.insert_many(new_data)
         print(f"Inserted {len(new_data)} new records into MongoDB.")
     else:
         print("No new data to insert.")
 
 
-# Main function to update databases
 def update_database():
     db_handler = DatabaseHandler(db_name, db_user, db_pass)
     collections = connecting_db()
@@ -125,7 +122,6 @@ def email_failure(context):
     send_email(to="recipient@example.com", subject=subject, html_content=body)
 
 
-# Set up the Airflow DAG (example)
 default_args = {
     "owner": "Ikwu_Francis",
     "depends_on_past": False,
