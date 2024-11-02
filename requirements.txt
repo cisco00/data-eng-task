@@ -1,3 +1,7 @@
 pymongo
 yfinance
 psycopg2-binary
+streamlit
+pickle
+arch
+statsmodels
