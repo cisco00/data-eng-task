@@ -83,6 +83,24 @@ services:
       - ./notebooks:/opt/airflow/notebooks
     command: ["scheduler"]
 
+    # Streamlit App
+#  streamlit-app:
+#    build:
+#        context: .
+#        dockerfile: /home/oem/PycharmProjects/data-eng-task/app/Dockerfile
+#    container_name: streamlit-app
+#    depends_on:
+#       - postgres
+#       - mongo
+#    environment:
+#        DB_NAME: your_db_name
+#        DB_USER: your_db_user
+#        DB_PASS: your_db_pass
+#        DB_HOST: postgres
+#        DB_PORT: 5432
+#    ports:
+#      - "8501:8501"
+
 volumes:
   mongo_data:
     driver: local
